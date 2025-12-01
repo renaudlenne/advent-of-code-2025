@@ -29,7 +29,8 @@ defmodule Mix.Tasks.Advent.Gen do
 
   require Mix.Generator
 
-  @days 1..25
+  @days_pre_2025 1..25
+  @days_post_2025 1..12
 
   @impl Mix.Task
   def run(args) do
@@ -44,11 +45,12 @@ defmodule Mix.Tasks.Advent.Gen do
   defp generate(year) do
     solution_dir = Path.join(lib_root_dir(), year_subdir(year))
     test_dir = Path.join(test_root_dir(), year_subdir(year))
+    days = if year < 2025, do: @days_pre_2025, else: @days_post_2025
 
     Enum.each([solution_dir, test_dir], &Mix.Generator.create_directory/1)
 
     Enum.each(
-      @days,
+      days,
       &Mix.Generator.create_file(
         Path.join(
           solution_dir,
@@ -59,7 +61,7 @@ defmodule Mix.Tasks.Advent.Gen do
     )
 
     Enum.each(
-      @days,
+      days,
       &Mix.Generator.create_file(
         Path.join(
           test_dir,
