@@ -14,19 +14,15 @@ defmodule AdventOfCode.Solution.Year2025.Day01 do
     |> then(fn {_, nb_zeros} -> nb_zeros end)
   end
 
-  def turn(res, 0, _), do: res
-
-  def turn({1, nb_zeros}, num, :left), do: turn({0, nb_zeros+1}, num-1, :left)
-  def turn({0, nb_zeros}, num, :left), do: turn({99, nb_zeros}, num-1, :left)
-  def turn({99, nb_zeros}, num, :right), do: turn({0, nb_zeros+1}, num-1, :right)
-
   def turn({state, nb_zeros}, num, dir) when num > 100, do: turn({state, nb_zeros+1}, num-100, dir)
 
   def turn({state, nb_zeros}, num, :left) when num < state, do: {state-num, nb_zeros}
   def turn({state, nb_zeros}, num, :right) when state + num < 100, do: {state+num, nb_zeros}
 
-  def turn({state, nb_zeros}, num, :left), do: turn({state-1, nb_zeros}, num-1, :left)
-  def turn({state, nb_zeros}, num, :right), do: turn({state+1, nb_zeros}, num-1, :right)
+  def turn({0, nb_zeros}, num, :left), do: turn({99, nb_zeros}, num-1, :left)
+
+  def turn({state, nb_zeros}, num, :left), do: {rem(state+100-num, 100), nb_zeros+1}
+  def turn({state, nb_zeros}, num, :right), do: {rem(state+num, 100), nb_zeros+1}
 
   def part2(input) do
     input
