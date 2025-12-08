@@ -1,48 +1,38 @@
 defmodule AdventOfCode.Solution.Year2025.Day06 do
+  @whitespace_regex ~r{\s+}
 
-  def do_col_operation(["+" | rest]) do
-    rest
-    |> Enum.reduce(0, fn str, acc -> acc + String.to_integer(str) end)
+  def apply_operator(numbers, "+"), do: Enum.sum(numbers)
+  def apply_operator(numbers, "*"), do: Enum.product(numbers)
+
+  def do_col_operation([operator | numbers]) do
+    numbers
+    |> Enum.map(&String.to_integer/1)
+    |> apply_operator(operator)
   end
 
-  def do_col_operation(["*" | rest]) do
-    rest
-    |> Enum.reduce(1, fn str, acc -> acc * String.to_integer(str) end)
+  def parse_inverse_lines(input) do
+    input
+    |> String.split("\n", trim: true)
+    |> Enum.reverse()
   end
 
   def part1(input) do
     input
-    |> String.split("\n")
-    |> Enum.map(fn line -> String.split(line, ~r{\s+}, trim: true) end)
-    |> Enum.reverse()
-    |> Enum.drop(1)
+    |> parse_inverse_lines()
+    |> Enum.map(fn line -> String.split(line, @whitespace_regex, trim: true) end)
     |> Enum.zip_reduce(0, fn col, acc ->
       acc + do_col_operation(col)
     end)
   end
 
-  def do_col_operation("+", numbers) do
-    numbers
-    |> Enum.reduce(0, fn num, acc -> acc + num end)
-  end
-
-  def do_col_operation("*", numbers) do
-    numbers
-    |> Enum.reduce(1, fn num, acc -> acc * num end)
-  end
-
   def part2(input) do
-    base = input
-    |> String.split("\n")
-    |> Enum.reverse()
-    |> Enum.drop(1)
+    [operators_line | lines ] = input
+    |> parse_inverse_lines()
 
-    operations = base
-    |> hd()
-    |> String.split(~r{\s+}, trim: true)
+    operations = operators_line
+    |> String.split(@whitespace_regex, trim: true)
 
-    base
-    |> Enum.drop(1)
+    lines
     |> Enum.reverse()
     |> Enum.map(&String.graphemes/1)
     |> Enum.zip()
@@ -55,7 +45,8 @@ defmodule AdventOfCode.Solution.Year2025.Day06 do
       end
     end, fn acc -> {:cont, acc, []} end)
     |> Enum.zip_reduce(operations, 0, fn numbers, operation, acc ->
-      acc + do_col_operation(operation, numbers)
+      acc + apply_operator(numbers, operation)
     end)
   end
 end
+
