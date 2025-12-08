@@ -21,7 +21,7 @@ defmodule AdventOfCode.Solution.Year2025.Day03 do
     input
     |> String.trim()
     |> String.split("\n")
-    |> Enum.reduce(0, fn line, acc -> acc + largest_joltage(String.codepoints(line), joltage_size) end)
+    |> Enum.reduce(0, fn line, acc -> acc + largest_joltage(String.graphemes(line), joltage_size) end)
   end
 
   def part1(input), do: parse_and_solve(input, 2)
