@@ -53,20 +53,18 @@ defmodule AdventOfCode.Solution.Year2025.Day08 do
     |> Enum.reduce_while(initial_groups, fn [box1, box2], groups ->
       box1_idx = Enum.find_index(groups, fn g -> Enum.member?(g, box1) end)
       box2_idx = Enum.find_index(groups, fn g -> Enum.member?(g, box2) end)
-      cond do
-        box1_idx == nil and box2_idx == nil -> {:cont, [[box1, box2] | groups]}
-        box1_idx == box2_idx -> {:cont, groups}
-        box1_idx == nil -> {:cont, List.replace_at(groups, box2_idx, [box1 | Enum.at(groups, box2_idx)])}
-        box2_idx == nil -> {:cont, List.replace_at(groups, box1_idx, [box2 | Enum.at(groups, box1_idx)])}
-        true ->
-          {smallest_idx, largest_idx} = Enum.min_max([box1_idx, box2_idx])
-          new_groups = List.replace_at(groups, smallest_idx, Enum.at(groups, smallest_idx) ++ Enum.at(groups, largest_idx))
-          |> List.delete_at(largest_idx)
+      if box1_idx == box2_idx do
+        {:cont, groups}
+      else
+        {smallest_idx, largest_idx} = Enum.min_max([box1_idx, box2_idx])
 
-          case new_groups do
-            [_] -> {:halt, hd(box1) * hd(box2)}
-            _ -> {:cont, new_groups}
-          end
+        new_groups = List.replace_at(groups, smallest_idx, Enum.at(groups, smallest_idx) ++ Enum.at(groups, largest_idx))
+        |> List.delete_at(largest_idx)
+
+        case new_groups do
+          [_] -> {:halt, hd(box1) * hd(box2)}
+          _ -> {:cont, new_groups}
+        end
       end
     end)
   end
